@@ -15,10 +15,14 @@ const String kAppName = 'CareCircle';
 /// exist yet. Phase 1 introduces `profileBox`, `medicationBox`,
 /// `vitalsBox`, and `incidentsBox` (see architecture.md §4).
 abstract final class HiveBoxNames {
-  /// Small key/value box for app-level metadata that isn't a domain model
-  /// (e.g. schema/migration bookkeeping). Distinct from SharedPreferences,
-  /// which is reserved for simple UI preferences (architecture.md §4).
   static const String appMetadata = 'appMetadataBox';
+
+  /// Phase 1 (architecture.md §4). Type IDs for the models these boxes
+  /// hold are fixed in care_models.dart and must never be renumbered.
+  static const String profile = 'profileBox';
+  static const String medication = 'medicationBox';
+  static const String vitals = 'vitalsBox';
+  static const String incidents = 'incidentsBox';
 }
 
 /// SharedPreferences keys.
@@ -38,3 +42,5 @@ const double kMinTouchTarget = 48.0;
 
 /// Standard motion duration range used across the app (design.md §16).
 const Duration kStandardTransitionDuration = Duration(milliseconds: 200);
+
+

@@ -60,7 +60,7 @@ abstract final class AppTheme {
           textStyle: textTheme.labelLarge,
         ),
       ),
-      navigationBarTheme: NavigationBarThemeData(
+      navigationBarTheme: const NavigationBarThemeData(
         height: 72,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       ),

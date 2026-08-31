@@ -1,19 +1,15 @@
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../../data/adapters/hive_adapters.dart';
+import '../../data/models/care_models.dart';
 import '../constants/app_constants.dart';
 import '../errors/failures.dart';
 
 /// Owns Hive initialization and box lifecycle.
 ///
-/// No domain models (SeniorProfile, Medication, ...) exist yet — those,
-/// along with their generated adapters, arrive in Phase 1. Phase 0 only
-/// needs to prove that Hive initializes correctly and that a box can be
-/// opened and survives app restarts, per the Phase 0 exit criteria in
-/// phases.md ("Storage initialization works").
-///
-/// UI code must never call [Hive.box] directly (architecture.md §3/§16).
-/// It should go through a repository, which in turn is backed by a
-/// service like this one.
+/// Phase 1 introduces the four domain boxes (architecture.md §4); UI code
+/// must never call [Hive.box] directly — always go through a repository
+/// (architecture.md §3/§16).
 class HiveStorageService {
   HiveStorageService._();
 
@@ -21,33 +17,41 @@ class HiveStorageService {
 
   bool _initialized = false;
 
-  /// Whether [init] has completed successfully.
   bool get isInitialized => _initialized;
 
-  /// Initializes Hive and opens the app metadata box.
-  ///
-  /// Must be awaited before [runApp] (see architecture.md §13 —
-  /// "Lifecycle and Reliability").
+  /// Initializes Hive, registers adapters, and opens every box. Must be
+  /// awaited before [runApp] (architecture.md §13).
   Future<void> init() async {
     if (_initialized) return;
 
     try {
       await Hive.initFlutter();
+      registerHiveAdapters();
+
       await Hive.openBox<dynamic>(HiveBoxNames.appMetadata);
+      await Hive.openBox<SeniorProfile>(HiveBoxNames.profile);
+      await Hive.openBox<Medication>(HiveBoxNames.medication);
+      await Hive.openBox<HealthVital>(HiveBoxNames.vitals);
+      await Hive.openBox<IncidentLog>(HiveBoxNames.incidents);
+
       _initialized = true;
     } catch (_) {
       throw const StorageFailure();
     }
   }
 
-  /// The app metadata box, for small non-domain bookkeeping values
-  /// (e.g. a future schema-version marker for migrations).
-  Box<dynamic> get appMetadataBox {
+  Box<dynamic> get appMetadataBox => _box<dynamic>(HiveBoxNames.appMetadata);
+  Box<SeniorProfile> get profileBox => _box<SeniorProfile>(HiveBoxNames.profile);
+  Box<Medication> get medicationBox => _box<Medication>(HiveBoxNames.medication);
+  Box<HealthVital> get vitalsBox => _box<HealthVital>(HiveBoxNames.vitals);
+  Box<IncidentLog> get incidentsBox => _box<IncidentLog>(HiveBoxNames.incidents);
+
+  Box<T> _box<T>(String name) {
     if (!_initialized) {
       throw StateError(
         'HiveStorageService.init() must complete before accessing boxes.',
       );
     }
-    return Hive.box<dynamic>(HiveBoxNames.appMetadata);
+    return Hive.box<T>(name);
   }
 }

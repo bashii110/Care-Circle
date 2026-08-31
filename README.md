@@ -13,9 +13,10 @@ Source-of-truth project documents live alongside this codebase:
 
 ## Current status
 
-**Phase 0 — Project Foundation** (see `phases.md`). No domain features are
-implemented yet; this phase establishes the app shell, theming, folder
-structure, and storage initialization that every later phase builds on.
+Phase 1 — Data Layer complete (see phases.md). SeniorProfile, 
+Medication, HealthVital, and IncidentLog are backed by Hive, 
+behind repository interfaces (lib/data/repositories/) with basic validation.
+No screens consume them yet — that starts in Phase 2.
 
 ## Getting started
 
