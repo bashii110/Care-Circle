@@ -1,0 +1,66 @@
+name: care_circle
+description: >
+  CareCircle — an offline-first senior care tracking and caregiver
+  handover application.
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+# ---------------------------------------------------------------------------
+# Dependency policy (see phases.md — "Delivery Strategy: vertical slices"):
+#
+# Only dependencies required by the CURRENT phase are declared here.
+# Packages needed by later phases (share_plus, local_auth, fl_chart) are
+# added when their corresponding phase begins, so `flutter pub get` never
+# pulls in unused native plugins for a phase that hasn't started yet.
+# ---------------------------------------------------------------------------
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management (architecture.md §2, §6)
+  flutter_riverpod: ^2.6.1
+
+  # Local persistence (architecture.md §2, §4)
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  # Non-sensitive local preferences (architecture.md §4)
+  shared_preferences: ^2.3.3
+
+  # Phase 4 — Local Notifications (architecture.md §2, §8, §11).
+  # `timezone` + `flutter_timezone` back `zonedSchedule`'s
+  # `matchDateTimeComponents: DateTimeComponents.time`, which is what makes
+  # a medication reminder repeat daily at the same **local** wall-clock
+  # time rather than a fixed UTC instant.
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.9.4
+  flutter_timezone: ^3.0.1
+
+  # Phase 5 — Dashboard: the emergency-call action (srd.md FR-09) opens
+  # the native phone dialer via a `tel:` URI.
+  url_launcher: ^6.3.1
+
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+  # Phase 1 — Data Layer: code generation for Hive TypeAdapters.
+  # `lib/data/models/care_models.g.dart` is currently hand-authored to
+  # match this generator's output exactly (see the note at the top of that
+  # file) because this sandbox has no Dart/Flutter SDK to run it. Once you
+  # have Flutter installed, run:
+  #   dart run build_runner build --delete-conflicting-outputs
+  # to regenerate it from source and confirm it matches.
+  hive_generator: ^2.0.1
+  build_runner: ^2.4.13
+
+flutter:
+  uses-material-design: true
